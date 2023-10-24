@@ -18,4 +18,3 @@ class Bottle:
                 else:
                     print(" |  |")
         print("------")
-
