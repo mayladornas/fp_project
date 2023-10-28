@@ -8,6 +8,7 @@ Created on Thu Oct 12 09:16:12 2023
 
 from random import seed
 from random import randint
+import pandas as pd
 
 # *****************************************************
 
@@ -127,7 +128,7 @@ def showInfoBottle(liquid, maxLiquid, deltaDown, deltaUp):
           the values of deltaDown and deltaUp. Example:
               - if liquid is 10, and maxLiquid is 50, then the bottle is 
                 20% full.
-             - if deltaDown is .15 and deltaUp is .21, then the the program 
+             - if deltaDown is .15 and deltaUp is .21, then the program
                tells the user that the bottle is between 17% and 24% full, 
                because .15 of 20% is 3%, and .21 of 20% is 4.2%
         - The next 11 lines give a somewhat visual representation of that
@@ -215,7 +216,7 @@ def askForQuantity(players, nr):
     Returns
     -------
     integer
-        The the quantity that the player number nr wants to add to the bottle.
+        The quantity that the player number nr wants to add to the bottle.
 
     """
     qty = int(input(f"Player {players[nr]['name']}: how much liquid? "))
@@ -323,11 +324,20 @@ def showInfoResult(bottle, maxL, players, nr, nrRounds):
     else:
         print("All players lost! The game is over")
     print("FINAL SCORES:")
-    print("NAME SCORE BONUS")
+    ##print("NAME SCORE BONUS")
     for player in players:
-        bonus = winBonus if player["score"] == maxL else 0
-        print(f"{player['name']} {player['score']} {bonus}")
+        player['bonus'] = 0
+        if player["score"] == maxL:
+            player['bonus'] = winBonus
+    # List of columns to include
+    columns_to_include = ["name", "score", "bonus"]
+    filtered_data = [{col: entry[col] for col in columns_to_include} for entry in players]
+    df = pd.DataFrame(filtered_data)
+    df.index = range(1, len(df) + 1)
+    print(df)
 
+        ##bonus = winBonus if player["score"] == maxL else 0
+        ##print(f"{player['name']} {player['score']} {bonus}")
 
 #######################################################
 ##################  MAIN PROGRAM ######################
@@ -341,7 +351,7 @@ minLiquid, maxLiquid, nrPlayers = askInfoGame()
 liquidInBottle = randomFill(minLiquid, maxLiquid, useSeed=1)
 players = initializePlayers(nrPlayers)
 
-# It can be the case that the bottle is iniatilly full
+# It can be the case that the bottle is initially full
 endGame = liquidInBottle == maxLiquid
 
 nrRounds = 0
