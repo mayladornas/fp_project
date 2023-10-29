@@ -3,7 +3,11 @@
 """
 Created on Thu Oct 12 09:16:12 2023
 
-@author: ???
+@author: 
+
+- Bernardo Costa - Nº 492s12
+- Mayla Dornas - Nº 
+
 """
 
 from random import seed
@@ -33,6 +37,7 @@ def askInfoGame():
 
     return minL, maxL, nrPlayers
 
+
 # *****************************************************
 
 
@@ -59,15 +64,16 @@ def randomFill(min, max, useSeed=0):
 
     return randint(min, max)
 
+
 # *****************************************************
 
 
 def initializePlayers(number):
     """
     Creates and returns an adequate data structure (you must choose the
-    one that suits better your purposes) that represents players. Remember 
+    one that suits better your purposes) that represents players. Remember
     each player must have a name, a current number of score points (equal to
-    the sum of the quantities he has already chosen), and whether it is still 
+    the sum of the quantities he has already chosen), and whether it is still
     playing or has already lost.
 
     Parameters
@@ -85,14 +91,11 @@ def initializePlayers(number):
     players = []
     for i in range(1, number + 1):
         name = input(f"Name of the player {i}? ")
-        player = {
-            "name": name,
-            "score": 0,
-            "lost": False
-        }
+        player = {"name": name, "score": 0, "lost": False}
         players.append(player)
 
     return players
+
 
 # *****************************************************
 
@@ -123,13 +126,13 @@ def showInfoBottle(liquid, maxLiquid, deltaDown, deltaUp):
     """
     Prints several lines in the standard output informing about the
     current state of the game:
-        - The first line informs about the interval of percentages within which 
+        - The first line informs about the interval of percentages within which
           lies the current bottle content percentage. This interval depends on
           the values of deltaDown and deltaUp. Example:
-              - if liquid is 10, and maxLiquid is 50, then the bottle is 
+              - if liquid is 10, and maxLiquid is 50, then the bottle is
                 20% full.
              - if deltaDown is .15 and deltaUp is .21, then the program
-               tells the user that the bottle is between 17% and 24% full, 
+               tells the user that the bottle is between 17% and 24% full,
                because .15 of 20% is 3%, and .21 of 20% is 4.2%
         - The next 11 lines give a somewhat visual representation of that
           interval of percentages (each line accounts for 10% ; the last one
@@ -154,7 +157,7 @@ def showInfoBottle(liquid, maxLiquid, deltaDown, deltaUp):
 
     """
 
-    currentPercentage = liquid/maxLiquid * 100
+    currentPercentage = liquid / maxLiquid * 100
     deltaLeft = max(currentPercentage - (currentPercentage * deltaDown), 0)
     deltaRight = min(currentPercentage + (currentPercentage * deltaUp), 100)
 
@@ -167,6 +170,7 @@ def showInfoBottle(liquid, maxLiquid, deltaDown, deltaUp):
         is_filled = fill_level >= deltaLeft and fill_level <= deltaRight
 
         if is_filled:
+            prevFilled = True
             print("|@@|")
         elif prevFilled:
             print("|##|")
@@ -174,6 +178,7 @@ def showInfoBottle(liquid, maxLiquid, deltaDown, deltaUp):
             print("|  |")
 
     print("----")
+
 
 # *****************************************************
 
@@ -192,18 +197,19 @@ def notLostYet(players, nr):
     Returns
     -------
     boolean
-        True if the player with number nr has not yet lost the game. 
+        True if the player with number nr has not yet lost the game.
         False otherwise.
 
     """
     return not players[nr]["lost"]
+
 
 # *****************************************************
 
 
 def askForQuantity(players, nr):
     """
-    Asks the user for the value of the quantity that the player number nr 
+    Asks the user for the value of the quantity that the player number nr
     wants to add to the bottle
 
     Parameters
@@ -221,6 +227,7 @@ def askForQuantity(players, nr):
     """
     qty = int(input(f"Player {players[nr]['name']}: how much liquid? "))
     return qty
+
 
 # *****************************************************
 
@@ -247,6 +254,7 @@ def updatePlayerScores(players, nr, qty):
 
     players[nr]["score"] += int(qty)
 
+
 # *****************************************************
 
 
@@ -267,6 +275,7 @@ def updatePlayerLost(players, nr):
 
     """
     players[nr]["lost"] = True
+
 
 # *****************************************************
 
@@ -292,7 +301,7 @@ def allLost(players):
 # *****************************************************
 def showInfoResult(bottle, maxL, players, nr, nrRounds):
     """
-    Shows the information about the outcome of the game (see the examples 
+    Shows the information about the outcome of the game (see the examples
     given in the text of the project)
 
     Parameters
@@ -317,38 +326,39 @@ def showInfoResult(bottle, maxL, players, nr, nrRounds):
     if bottle == maxL:
         print("The bottle is finally full. Game over!!")
         winning_players = [
-            player for player in players if player["score"] == maxL]
+            player for player in players if player["score"] == maxScore]
         if winning_players:
             print(
                 f"{winning_players[0]['name']} won the game in {nrRounds} plays")
     else:
         print("All players lost! The game is over")
     print("FINAL SCORES:")
-    ##print("NAME SCORE BONUS")
+
     for player in players:
-        player['bonus'] = 0
-        if player["score"] == maxL:
-            player['bonus'] = winBonus
+        player["bonus"] = 0
+        if player["score"] == maxScore:
+            player["bonus"] = winBonus
     # List of columns to include
     columns_to_include = ["name", "score", "bonus"]
-    filtered_data = [{col: entry[col] for col in columns_to_include} for entry in players]
+    filtered_data = [
+        {col: entry[col] for col in columns_to_include} for entry in players
+    ]
     df = pd.DataFrame(filtered_data)
     df.index = range(1, len(df) + 1)
     print(df)
 
-        ##bonus = winBonus if player["score"] == maxL else 0
-        ##print(f"{player['name']} {player['score']} {bonus}")
 
 #######################################################
 ##################  MAIN PROGRAM ######################
 #######################################################
-winBonus = 50         # The bonus to be given to the winner, if any
-deltaLeft = 0.2       # Used to inform the user about the state of the bottle
-deltaRight = 0.23     # Used to inform the user about the state of the bottle
+winBonus = 50  # The bonus to be given to the winner, if any
+deltaLeft = 0.2  # Used to inform the user about the state of the bottle
+deltaRight = 0.23  # Used to inform the user about the state of the bottle
 
 minLiquid, maxLiquid, nrPlayers = askInfoGame()
 
 liquidInBottle = randomFill(minLiquid, maxLiquid, useSeed=1)
+maxScore = maxLiquid - liquidInBottle
 players = initializePlayers(nrPlayers)
 
 # It can be the case that the bottle is initially full
@@ -372,7 +382,8 @@ while not endGame:
             if qty + liquidInBottle > maxLiquid:
                 updatePlayerLost(players, nr)
                 print(
-                    "Oops! You tried to overfill the bottle! The game is over for you!\n")
+                    "Oops! You tried to overfill the bottle! The game is over for you!\n"
+                )
             else:
                 liquidInBottle += qty
                 showInfoBottle(liquidInBottle, maxLiquid,
