@@ -5,8 +5,8 @@ Created on Thu Oct 12 09:16:12 2023
 
 @author: 
 
-- Bernardo Costa - Nº 492s12
-- Mayla Dornas - Nº 
+- Bernardo Costa - Nº 49212
+- Mayla Dornas - Nº 62933
 
 """
 
@@ -83,9 +83,8 @@ def initializePlayers(number):
 
     Returns
     -------
-    result : ??? you choose the type!!
-        An adequate data structure that represents the game players at the
-        beginning of the game.
+    result : list
+        A list of dictionaries representing the players at the start of the game.
 
     """
     players = []
@@ -300,7 +299,7 @@ def allLost(players):
 
 
 # *****************************************************
-def showInfoResult(bottle, maxL, players, nr, nrRounds):
+def showInfoResult(bottle, maxL, players, nrRounds):
     """
     Shows the information about the outcome of the game (see the examples
     given in the text of the project)
@@ -313,8 +312,6 @@ def showInfoResult(bottle, maxL, players, nr, nrRounds):
         The capacity of the bottle.
     players : A data structure (your decision)
         A data structure containing the information about players.
-    nr : integer
-        A number that allows to identify which player has won, if any.
     nrRounds : integer
         The number of rounds played in the game.
 
@@ -323,26 +320,35 @@ def showInfoResult(bottle, maxL, players, nr, nrRounds):
     None.
 
     """
+    winners = []
+    winnerScore = 0
+
+    for player in players:
+        if player["score"] != "Lost" and player["score"] >= winnerScore:
+            if player["score"] > winnerScore:
+                winners = [player]
+            else:
+                winners.append(player)
+            winnerScore = player["score"]
+
+    # Ensure all players have a 'bonus' key
+    for player in players:
+        player.setdefault("bonus", 0)
+
     print("********** GAME OVER **********")
     if bottle == maxL:
         print("The bottle is finally full. Game over!!")
-        winning_players = [
-            player for player in players if player["score"] == maxScore]
-        if winning_players:
-            print(
-                f"{winning_players[0]['name']} won the game in {nrRounds} plays")
-    else:
-        print("All players lost! The game is over")
+        if winners:
+            if len(winners) == 1:
+                print(f"{winners[0]['name']} has won the game in {nrRounds} plays!")
+            else:
+                print("It's a draw! Multiple players have won the game.")
+        else:
+            print("All players lost! The game is over")
     print("FINAL SCORES:")
 
-    winner = ""
-    winnerScore = 0
-    for player in players:
-        player["bonus"] = 0
-        if player["score"] != "Lost" and player["score"] > winnerScore:
-            winnerScore = player["score"]
-            winner = player["name"]
-            player["bonus"] = winBonus
+    for winner in winners:
+        winner["bonus"] = winBonus
 
     # List of columns to include
     columns_to_include = ["name", "score", "bonus"]
@@ -363,6 +369,12 @@ deltaRight = 0.23  # Used to inform the user about the state of the bottle
 
 minLiquid, maxLiquid, nrPlayers = askInfoGame()
 
+"""
+Generate a random starting liquid level in the bottle.
+Setting useSeed to a specific value (e.g., useSeed=1) ensures the same sequence of random numbers across code runs
+for reproducibility. Omit useSeed to introduce variability.
+"""
+
 liquidInBottle = randomFill(minLiquid, maxLiquid, useSeed=1)
 maxScore = maxLiquid - liquidInBottle
 players = initializePlayers(nrPlayers)
@@ -371,9 +383,12 @@ players = initializePlayers(nrPlayers)
 endGame = liquidInBottle == maxLiquid
 
 nrRounds = 0
+
+# Show the initial state of the bottle
+
 showInfoBottle(liquidInBottle, maxLiquid, deltaLeft, deltaRight)
 
-# Let's play the game
+# Let's play the game, start the game loop.
 while not endGame:
     nrRounds += 1
     showInfoRound(nrRounds)
@@ -392,9 +407,8 @@ while not endGame:
                 )
             else:
                 liquidInBottle += qty
-                showInfoBottle(liquidInBottle, maxLiquid,
-                               deltaLeft, deltaRight)
+                showInfoBottle(liquidInBottle, maxLiquid, deltaLeft, deltaRight)
             # Should the game end after this turn?
             endGame = liquidInBottle == maxLiquid or allLost(players)
 
-showInfoResult(liquidInBottle, maxLiquid, players, nr, nrRounds)
+showInfoResult(liquidInBottle, maxLiquid, players, nrRounds)
