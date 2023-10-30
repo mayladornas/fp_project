@@ -4,9 +4,9 @@
 Created on Thu Oct 12 09:16:12 2023
 
 @author: 
-
-- Bernardo Costa - Nº 49212
-- Mayla Dornas - Nº 62933
+GROUP FP13
+Bernardo Costa - Nº 49212
+Mayla Dornas - Nº 62933
 
 """
 
