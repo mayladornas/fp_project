@@ -275,6 +275,7 @@ def updatePlayerLost(players, nr):
 
     """
     players[nr]["lost"] = True
+    players[nr]["score"] = "Lost"
 
 
 # *****************************************************
@@ -334,10 +335,15 @@ def showInfoResult(bottle, maxL, players, nr, nrRounds):
         print("All players lost! The game is over")
     print("FINAL SCORES:")
 
+    winner = ""
+    winnerScore = 0
     for player in players:
         player["bonus"] = 0
-        if player["score"] == maxScore:
+        if player["score"] != "Lost" and player["score"] > winnerScore:
+            winnerScore = player["score"]
+            winner = player["name"]
             player["bonus"] = winBonus
+
     # List of columns to include
     columns_to_include = ["name", "score", "bonus"]
     filtered_data = [
