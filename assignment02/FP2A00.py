@@ -3,13 +3,25 @@
 """
 Created on Sat Nov  4 08:58:15 2023
 
-@author: FP
+@author:
+GROUP FP13
+Bernardo Costa - Nº 49212
+Mayla Dornas - Nº 62933
+
 """
+
 #######################################################
 ####################  FUNCTIONS  ######################
 #######################################################        
+def askForExpertise ():
+    "Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT)"
 
-# Insert your functions here
+    expertiseLevel = int(input("What is your expertise level? Choose between 1 to 5, where 1 is the max expertise level. "))
+    if expertiseLevel >= 1 and expertiseLevel <= 5:
+        return expertiseLevel
+    else:
+        print("Choose a number between 1 to 5. ")
+
 
 #######################################################
 ##################  MAIN PROGRAM ######################
