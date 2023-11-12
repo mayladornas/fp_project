@@ -10,17 +10,56 @@ Mayla Dornas - Nº 62933
 
 """
 
+import random
+
 #######################################################
 ####################  FUNCTIONS  ######################
 #######################################################        
 def askForExpertise ():
     "Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT)"
 
-    expertiseLevel = int(input("What is your expertise level? Choose between 1 to 5, where 1 is the max expertise level. "))
+    expertiseLevel = int(input(f"What is your expertise level? Choose between {MAX_EXPERT} to {LESS_EXPERT}, where {MAX_EXPERT} is the max expertise level. "))
     if expertiseLevel >= 1 and expertiseLevel <= 5:
         return expertiseLevel
     else:
         print("Choose a number between 1 to 5. ")
+
+# *****************************************************
+
+def buildGameBottles (expertiseLevel):
+    """
+    Given an integer expertise representing the user’s expertise, builds and returns a structure
+    containing the information of each and every bottle in the game – there will exist NR_BOTTLES
+    bottles in total, each with a maximum capacity of CAPACITY; these bottles are to be (partially)
+    filled with various symbols in SYMBOLS, and each bottle is named a letter from LETTERS.
+
+    """
+    CAPACITY = 8
+    LETTERS = "ABCDEFGHIJ"
+    SYMBOLS = "@#%$!+o?§"
+    NR_BOTTLES = 10
+    array_of_bottles = [[] for _ in range(NR_BOTTLES)]
+
+    symbolsByExpertise = SYMBOLS[0:(5+(5-expertiseLevel))]
+    totalCapacity = NR_BOTTLES*CAPACITY - expertiseLevel*CAPACITY
+
+    while totalCapacity > 0:
+        # Choose a random bottle from the array of bottles
+        random_array_index = random.randint(0, NR_BOTTLES - 1)
+
+        # Check if the array of bottles still has space
+        if len(array_of_bottles[random_array_index]) < CAPACITY:
+            # Add a symbol to the chosen array
+            array_of_bottles[random_array_index].append(random.choice(symbolsByExpertise))
+            # Decrease the number of fixed spaces
+            totalCapacity -= 1
+
+    bottles = []
+    for i in range(NR_BOTTLES):
+        bottle = {"name": LETTERS[i], "quantity": array_of_bottles[i]}
+        bottles.append(bottle)
+
+
 
 
 #######################################################
