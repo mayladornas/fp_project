@@ -34,14 +34,14 @@ def buildGameBottles (expertiseLevel):
     filled with various symbols in SYMBOLS, and each bottle is named a letter from LETTERS.
 
     """
-    CAPACITY = 8
-    LETTERS = "ABCDEFGHIJ"
-    SYMBOLS = "@#%$!+o?§"
-    NR_BOTTLES = 10
-    array_of_bottles = [[] for _ in range(NR_BOTTLES)]
 
+    array_of_bottles = [[] for _ in range(NR_BOTTLES)]
     symbolsByExpertise = SYMBOLS[0:(5+(5-expertiseLevel))]
     totalCapacity = NR_BOTTLES*CAPACITY - expertiseLevel*CAPACITY
+
+    # Create a list with symbols repeated 8 times
+    repeated_symbols = [symbol for symbol in symbolsByExpertise for _ in range(8)]
+    random.shuffle(repeated_symbols)
 
     while totalCapacity > 0:
         # Choose a random bottle from the array of bottles
@@ -50,8 +50,8 @@ def buildGameBottles (expertiseLevel):
         # Check if the array of bottles still has space
         if len(array_of_bottles[random_array_index]) < CAPACITY:
             # Add a symbol to the chosen array
-            array_of_bottles[random_array_index].append(random.choice(symbolsByExpertise))
-            # Decrease the number of fixed spaces
+            array_of_bottles[random_array_index].append(repeated_symbols.pop())
+            # Decrease the number of total capacity
             totalCapacity -= 1
 
     bottles = []
@@ -59,7 +59,7 @@ def buildGameBottles (expertiseLevel):
         bottle = {"name": LETTERS[i], "quantity": array_of_bottles[i]}
         bottles.append(bottle)
 
-
+    return bottles
 
 
 #######################################################
