@@ -14,33 +14,62 @@ import random
 
 #######################################################
 ####################  FUNCTIONS  ######################
-#######################################################        
-def askForExpertise ():
-    "Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT)"
+#######################################################
 
-    expertiseLevel = int(input(f"What is your expertise level? Choose between {MAX_EXPERT} to {LESS_EXPERT}, where {MAX_EXPERT} is the max expertise level. "))
-    if expertiseLevel >= 1 and expertiseLevel <= 5:
+
+def askForExpertise():
+    """
+    Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT).
+
+    Returns
+    -------
+    expertiseLevel: integer
+        The user's chosen expertise level.
+
+    """
+
+    expertiseLevel = int(
+        input(
+            f"What is your expertise level? Choose between {MAX_EXPERT} to {LESS_EXPERT}, where {MAX_EXPERT} is the max expertise level. "
+        )
+    )
+
+    if MAX_EXPERT <= expertiseLevel <= LESS_EXPERT:
         return expertiseLevel
     else:
         print("Choose a number between 1 to 5. ")
+        return askForExpertise()
+
 
 # *****************************************************
 
-def buildGameBottles (expertiseLevel):
+
+def buildGameBottles(expertiseLevel):
     """
     Given an integer expertise representing the user’s expertise, builds and returns a structure
     containing the information of each and every bottle in the game – there will exist NR_BOTTLES
     bottles in total, each with a maximum capacity of CAPACITY; these bottles are to be (partially)
     filled with various symbols in SYMBOLS, and each bottle is named a letter from LETTERS.
 
+    Parameters
+    ----------
+    expertiseLevel : integer
+        The user's chosen expertise level.
+
+    Returns
+    -------
+    list
+        A list containing dictionaries representing each bottle in the game.
+
     """
 
     array_of_bottles = [[] for _ in range(NR_BOTTLES)]
-    symbolsByExpertise = SYMBOLS[0:(5+(5-expertiseLevel))]
-    totalCapacity = NR_BOTTLES*CAPACITY - expertiseLevel*CAPACITY
+    symbolsByExpertise = SYMBOLS[0: (5 + (5 - expertiseLevel))]
+    totalCapacity = NR_BOTTLES * CAPACITY - expertiseLevel * CAPACITY
 
     # Create a list with symbols repeated 8 times
-    repeated_symbols = [symbol for symbol in symbolsByExpertise for _ in range(8)]
+    repeated_symbols = [
+        symbol for symbol in symbolsByExpertise for _ in range(8)]
     random.shuffle(repeated_symbols)
 
     while totalCapacity > 0:
@@ -64,7 +93,7 @@ def buildGameBottles (expertiseLevel):
 
 #######################################################
 ##################  MAIN PROGRAM ######################
-#######################################################        
+#######################################################
 CAPACITY = 8
 LETTERS = "ABCDEFGHIJ"
 SYMBOLS = "@#%$!+o?§"
@@ -74,14 +103,14 @@ MAX_EXPERT = 1
 expertise = askForExpertise()
 bottles = buildGameBottles(expertise)
 nrErrors = 0
-fullBottles = 0 
+fullBottles = 0
 endGame = False
 showBottles(bottles, nrErrors)
 # Let's play the game
 while not endGame:
     source, destin = askForPlay()
     if moveIsPossible(source, destin, bottles):
-        doMove(source, destin,bottles)
+        doMove(source, destin, bottles)
         showBottles(bottles, nrErrors)
         if full(bottles[destin]):
             fullBottles += 1
@@ -98,4 +127,3 @@ if nrErrors >= 3:
     print("Better luck next time!")
 else:
     print("CONGRATULATIONS!!")
-    
