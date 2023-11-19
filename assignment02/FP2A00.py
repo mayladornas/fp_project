@@ -203,11 +203,13 @@ while not endGame:
     if moveIsPossible(source, destin, bottles):
         doMove(source, destin, bottles)
         showBottles(bottles, nrErrors)
-        if full(bottles[destin]):
-            fullBottles += 1
-            keepGo = input("Bottle filled!!! Congrats!! Keep playing? (Y/N)")
-            if keepGo == "N":
-                endGame = True
+        for bottle in bottles:
+            if destin == bottle['name']:
+                if full(bottle):
+                    fullBottles += 1
+                    keepGo = input("Bottle filled!!! Congrats!! Keep playing? (Y/N)")
+                    if keepGo == "N":
+                        endGame = True
     else:
         print("Error!")
         nrErrors += 1
