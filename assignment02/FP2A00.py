@@ -91,6 +91,34 @@ def buildGameBottles(expertiseLevel):
     return bottles
 
 
+def showBottles(bottles, nrErrors):
+
+    matrix = []
+    for i in range(CAPACITY):
+        row = []
+        for bottle in bottles:
+            try:
+                row.append((bottle['quantity'][i]))
+            except IndexError:
+                row.append(' ')
+        matrix.append(row)
+
+    # Print names
+    for bottle in bottles:
+        print(f"{bottle['name']} ", end='')
+    print()
+
+    matrix.reverse()
+
+    # Print quantities
+    for row in matrix:
+        for char in row:
+            print(f"|{char}| ", end='')
+        print()
+
+    print(f"NUMBER OF ERRORS: {nrErrors}")
+
+
 #######################################################
 ##################  MAIN PROGRAM ######################
 #######################################################
