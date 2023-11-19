@@ -118,6 +118,22 @@ def showBottles(bottles, nrErrors):
 
     print(f"NUMBER OF ERRORS: {nrErrors}")
 
+def askForPlay():
+
+    sourceBottle = str(
+        input(
+            "Source bottle? "
+        )
+    )
+
+    destinationBottle = str(
+        input(
+            "Destination bottle? "
+        )
+    )
+
+    return sourceBottle, destinationBottle
+
 
 #######################################################
 ##################  MAIN PROGRAM ######################
