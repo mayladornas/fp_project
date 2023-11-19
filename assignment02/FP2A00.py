@@ -134,6 +134,33 @@ def askForPlay():
 
     return sourceBottle, destinationBottle
 
+def moveIsPossible(source, destin, bottles):
+
+    sourceQuantity = []
+    destinationQuantity = []
+    for bottle in bottles:
+        if source == bottle['name']:
+            sourceQuantity = bottle['quantity']
+
+        if destin == bottle['name']:
+            destinationQuantity = bottle['quantity']
+
+    transfSourceQuantity = []
+    if len(sourceQuantity) > 0 and len(destinationQuantity) <= CAPACITY:
+        transfSourceQuantity.append(sourceQuantity[-1])
+        for i in range(-2, -len(sourceQuantity) - 1, -1):
+            if transfSourceQuantity[-1] != sourceQuantity[i]:
+                break
+            else:
+                transfSourceQuantity.append(sourceQuantity[i])
+        total = len(destinationQuantity) + len(transfSourceQuantity)
+        if destinationQuantity[-1] == transfSourceQuantity[-1] and total <= CAPACITY:
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 #######################################################
 ##################  MAIN PROGRAM ######################
