@@ -161,6 +161,26 @@ def moveIsPossible(source, destin, bottles):
     else:
         return False
 
+def doMove(source, destin, bottles):
+
+    sourceQuantity = []
+    destinationQuantity = []
+    for bottle in bottles:
+        if source == bottle['name']:
+            sourceQuantity = bottle['quantity']
+
+        if destin == bottle['name']:
+            destinationQuantity = bottle['quantity']
+
+    transfSourceQuantity = []
+    transfSourceQuantity.append(sourceQuantity.pop(-1))
+    for i in range(-1, -len(sourceQuantity) - 1, -1):
+        if transfSourceQuantity[-1] == sourceQuantity[i]:
+            transfSourceQuantity.append(sourceQuantity.pop(i))
+        else:
+            break
+    destinationQuantity.extend(transfSourceQuantity)
+
 
 #######################################################
 ##################  MAIN PROGRAM ######################
