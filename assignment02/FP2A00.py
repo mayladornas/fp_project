@@ -20,12 +20,10 @@ import random
 def askForExpertise():
     """
     Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT).
-
     Returns
     -------
     expertiseLevel: integer
         The user's chosen expertise level.
-
     """
 
     expertiseLevel = int(
@@ -50,26 +48,22 @@ def buildGameBottles(expertiseLevel):
     containing the information of each and every bottle in the game – there will exist NR_BOTTLES
     bottles in total, each with a maximum capacity of CAPACITY; these bottles are to be (partially)
     filled with various symbols in SYMBOLS, and each bottle is named a letter from LETTERS.
-
     Parameters
     ----------
     expertiseLevel : integer
         The user's chosen expertise level.
-
     Returns
     -------
     list
         A list containing dictionaries representing each bottle in the game.
-
     """
 
     array_of_bottles = [[] for _ in range(NR_BOTTLES)]
-    symbolsByExpertise = SYMBOLS[0: (5 + (5 - expertiseLevel))]
+    symbolsByExpertise = SYMBOLS[0 : (5 + (5 - expertiseLevel))]
     totalCapacity = NR_BOTTLES * CAPACITY - expertiseLevel * CAPACITY
 
     # Create a list with symbols repeated 8 times
-    repeated_symbols = [
-        symbol for symbol in symbolsByExpertise for _ in range(8)]
+    repeated_symbols = [symbol for symbol in symbolsByExpertise for _ in range(8)]
     random.shuffle(repeated_symbols)
 
     while totalCapacity > 0:
@@ -80,6 +74,7 @@ def buildGameBottles(expertiseLevel):
         if len(array_of_bottles[random_array_index]) < CAPACITY:
             # Add a symbol to the chosen array
             array_of_bottles[random_array_index].append(repeated_symbols.pop())
+
             # Decrease the number of total capacity
             totalCapacity -= 1
 
@@ -92,20 +87,29 @@ def buildGameBottles(expertiseLevel):
 
 
 def showBottles(bottles, nrErrors):
+    """
+    Displays the current state of the game bottles and the number of errors.
+    Parameters
+    ----------
+    bottles : list
+        A list of dictionaries representing each bottle in the game.
+    nrErrors : int
+        The number of errors made so far in the game.
+    """
 
     matrix = []
     for i in range(CAPACITY):
         row = []
         for bottle in bottles:
             try:
-                row.append((bottle['quantity'][i]))
+                row.append((bottle["quantity"][i]))
             except IndexError:
-                row.append(' ')
+                row.append(" ")
         matrix.append(row)
 
     # Print names
     for bottle in bottles:
-        print(f"{bottle['name']} ", end='')
+        print(f" {bottle['name']} ", end=" ")
     print()
 
     matrix.reverse()
@@ -113,40 +117,58 @@ def showBottles(bottles, nrErrors):
     # Print quantities
     for row in matrix:
         for char in row:
-            print(f"|{char}| ", end='')
+            print(f"|{char}| ", end="")
         print()
 
     print(f"NUMBER OF ERRORS: {nrErrors}")
 
+
 def askForPlay():
+    """
+    Asks the user for the source and destination bottles for the next play.
+    Returns
+    -------
+    tuple
+        A tuple containing the names of the source and destination bottles.
+    """
 
-    sourceBottle = str(
-        input(
-            "Source bottle? "
-        )
-    )
+    sourceBottle = str(input("Source bottle? "))
 
-    destinationBottle = str(
-        input(
-            "Destination bottle? "
-        )
-    )
+    destinationBottle = str(input("Destination bottle? "))
 
     return sourceBottle, destinationBottle
 
+
 def moveIsPossible(source, destin, bottles):
+    """
+    Checks if a move is possible based on the game rules.
+
+    Parameters
+    ----------
+    source : str
+        The name of the source bottle.
+    destin : str
+        The name of the destination bottle.
+    bottles : list
+        A list of dictionaries representing each bottle in the game.
+
+    Returns
+    -------
+    bool
+        True if the move is possible, False otherwise.
+    """
 
     sourceQuantity = []
     destinationQuantity = []
     for bottle in bottles:
-        if source == bottle['name']:
-            sourceQuantity = bottle['quantity']
+        if source == bottle["name"]:
+            sourceQuantity = bottle["quantity"]
 
-        if destin == bottle['name']:
-            destinationQuantity = bottle['quantity']
+        if destin == bottle["name"]:
+            destinationQuantity = bottle["quantity"]
 
     transfSourceQuantity = []
-    if len(sourceQuantity) > 0 and len(destinationQuantity) <= CAPACITY:
+    if len(sourceQuantity) > 0 and len(destinationQuantity) < CAPACITY:
         transfSourceQuantity.append(sourceQuantity[-1])
         for i in range(-2, -len(sourceQuantity) - 1, -1):
             if transfSourceQuantity[-1] != sourceQuantity[i]:
@@ -154,32 +176,81 @@ def moveIsPossible(source, destin, bottles):
             else:
                 transfSourceQuantity.append(sourceQuantity[i])
         total = len(destinationQuantity) + len(transfSourceQuantity)
-        if destinationQuantity[-1] == transfSourceQuantity[-1] and total <= CAPACITY:
-            return True
-        else:
+
+        if destinationQuantity and destinationQuantity[-1] != transfSourceQuantity[-1]:
             return False
-    else:
-        return False
+        if total <= CAPACITY:
+            return True
+    return False
+
 
 def doMove(source, destin, bottles):
+    """
+    Performs the move if it's possible.
+
+    Parameters
+    ----------
+    source : str
+        The name of the source bottle.
+    destin : str
+        The name of the destination bottle.
+    bottles : list
+        A list of dictionaries representing each bottle in the game.
+    """
 
     sourceQuantity = []
     destinationQuantity = []
     for bottle in bottles:
-        if source == bottle['name']:
-            sourceQuantity = bottle['quantity']
+        if source == bottle["name"]:
+            sourceQuantity = bottle["quantity"]
 
-        if destin == bottle['name']:
-            destinationQuantity = bottle['quantity']
+        if destin == bottle["name"]:
+            destinationQuantity = bottle["quantity"]
 
     transfSourceQuantity = []
-    transfSourceQuantity.append(sourceQuantity.pop(-1))
-    for i in range(-1, -len(sourceQuantity) - 1, -1):
-        if transfSourceQuantity[-1] == sourceQuantity[i]:
-            transfSourceQuantity.append(sourceQuantity.pop(i))
-        else:
-            break
+
+    if sourceQuantity:
+        transfSourceQuantity.append(sourceQuantity.pop(-1))
+        while sourceQuantity and transfSourceQuantity[-1] == sourceQuantity[-1]:
+            transfSourceQuantity.append(sourceQuantity.pop(-1))
+
     destinationQuantity.extend(transfSourceQuantity)
+
+
+def full(bottle):
+    """
+    Checks if a bottle is full based on the condition in the main program.
+
+    Parameters
+    ----------
+    bottle : dict
+        A dictionary representing a bottle in the game.
+
+    Returns
+    -------
+    bool
+        True if the bottle is full, False otherwise.
+    """
+    return len(bottle["quantity"]) == CAPACITY
+
+
+def allBottlesFull(fullBottles, expertise):
+    """
+    Checks if all bottles are full based on the expertise level.
+
+    Parameters
+    ----------
+    fullBottles : int
+        The number of full bottles.
+    expertise : int
+        The expertise level of the player.
+
+    Returns
+    -------
+    bool
+        True if all bottles are full, False otherwise.
+    """
+    return fullBottles == NR_BOTTLES - expertise
 
 
 #######################################################
@@ -204,7 +275,7 @@ while not endGame:
         doMove(source, destin, bottles)
         showBottles(bottles, nrErrors)
         for bottle in bottles:
-            if destin == bottle['name']:
+            if destin == bottle["name"]:
                 if full(bottle):
                     fullBottles += 1
                     keepGo = input("Bottle filled!!! Congrats!! Keep playing? (Y/N)")
