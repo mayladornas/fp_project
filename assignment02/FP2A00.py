@@ -16,6 +16,30 @@ import random
 ####################  FUNCTIONS  ######################
 #######################################################
 
+def showInstructionsOfGame():
+    """
+       Shows the initial instructions of the game
+       """
+
+    print("=== Welcome to the Bottle Filling Game ===\n")
+    print("Objective:")
+    print(
+        "Your mission is to fill bottles with the same liquid symbol. You'll transfer liquid between bottles step by step, following some specific rules.\n")
+    print("Rules:")
+    print("1. The game will start with ten bottles partially filled with different symbols.")
+    print("2. You'll move the symbols from bottle to bottle but you can only add liquid to a bottle if its top symbol matches the liquid you're transferring.")
+    print("3. The goal is to have each bottle filled with a single symbol or empty by the end of the game.\n")
+    print("How to Play:")
+    print("1. You will be asked to choose your expertise level (from less expert (5) to max expert (1)).")
+    print("2. The number of bottles that must be completely filled by the end will be based on your expertise level.")
+    print("3. You'll be shown the bottles and their current state.")
+    print("4. Select the source and destination bottles to transfer the liquid, using capital letters.")
+    print("5. Continue until the bottles are filled with the same symbol or completely empty.")
+    print("6. IMPORTANT: You can only make 3 mistakes during the game.\n")
+
+    print("LET'S START!!! Enjoy the challenge!\n")
+
+
 
 def askForExpertise():
     """
@@ -272,6 +296,7 @@ SYMBOLS = "@#%$!+o?§"
 NR_BOTTLES = 10
 LESS_EXPERT = 5
 MAX_EXPERT = 1
+showInstructionsOfGame()
 expertise = askForExpertise()
 bottles = buildGameBottles(expertise)
 nrErrors = 0
