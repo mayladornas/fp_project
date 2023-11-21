@@ -131,10 +131,20 @@ def askForPlay():
     tuple
         A tuple containing the names of the source and destination bottles.
     """
+    global bottles 
+    valid_entries = False
+    while not valid_entries:
+        sourceBottle = str(input("Source bottle? "))
+        destinationBottle = str(input("Destination bottle? "))
 
-    sourceBottle = str(input("Source bottle? "))
-
-    destinationBottle = str(input("Destination bottle? "))
+        if (
+            sourceBottle in [bottle["name"] for bottle in bottles]
+            and destinationBottle in [bottle["name"] for bottle in bottles]
+            and sourceBottle != destinationBottle
+        ):
+            valid_entries = True
+        else:
+            print("Invalid entries. Please enter valid source and destination bottles.")
 
     return sourceBottle, destinationBottle
 
@@ -219,7 +229,7 @@ def doMove(source, destin, bottles):
 
 def full(bottle):
     """
-    Checks if a bottle is full based on the condition in the main program.
+    Checks if a bottle is full with the same symbol.
 
     Parameters
     ----------
@@ -229,9 +239,9 @@ def full(bottle):
     Returns
     -------
     bool
-        True if the bottle is full, False otherwise.
+        True if the bottle is full with the same symbol, False otherwise.
     """
-    return len(bottle["quantity"]) == CAPACITY
+    return len(set(bottle["quantity"])) == 1 and len(bottle["quantity"]) == CAPACITY
 
 
 def allBottlesFull(fullBottles, expertise):
@@ -284,7 +294,8 @@ while not endGame:
     else:
         print("Error!")
         nrErrors += 1
-    endGame = allBottlesFull(fullBottles, expertise) or nrErrors == 3
+    if not endGame:
+        endGame = allBottlesFull(fullBottles, expertise) or nrErrors == 3
 
 print("Full bottles =", fullBottles, "  Errors =", nrErrors)
 if nrErrors >= 3:
