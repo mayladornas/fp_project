@@ -1,0 +1,18 @@
+{
+    "expertise": 1,
+    "bottles_info": [
+      {"name": "A", "quantity": []},
+      {"name": "B", "quantity": []},
+      {"name": "C", "quantity": []},
+      {"name": "D", "quantity": []},
+      {"name": "E", "quantity": []},
+      {"name": "F", "quantity": []},
+      {"name": "G", "quantity": []},
+      {"name": "H", "quantity": []},
+      {"name": "I", "quantity": []},
+      {"name": "J", "quantity": []}
+    ],
+    "bottlesToFill": 9,
+    "nrErrors": 0
+  }
+  
