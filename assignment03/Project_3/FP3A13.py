@@ -430,7 +430,7 @@ while not endGame:
         endGame = allBottlesFull(fullBottles, expertise) or nrErrors == 3
 
 # After the game ends, save the final state to the specified file
-writeGameInfo(saveFileName, NR_BOTTLES - expertise, bottles)
+writeGameInfo(saveFileName,NR_BOTTLES - fullBottles,bottles, fullBottles, nrErrors)
 
 print("Full bottles =", fullBottles, "  Errors =", nrErrors)
 if nrErrors >= 3:
