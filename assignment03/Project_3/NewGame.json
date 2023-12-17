@@ -1,0 +1,18 @@
+{
+  "expertiseLevel": 3,
+  "nrBottlesToFill": 7,
+  "bottlesInfo": [
+    {"name": "A", "quantity": ["@", "#", "%"]},
+    {"name": "B", "quantity": ["$", "!", "+"]},
+    {"name": "C", "quantity": ["o", "?", "§"]},
+    {"name": "D", "quantity": ["@", "#", "%"]},
+    {"name": "E", "quantity": ["$", "!", "+"]},
+    {"name": "F", "quantity": ["o", "?", "§"]},
+    {"name": "G", "quantity": ["@", "#", "%"]},
+    {"name": "H", "quantity": ["$", "!", "+"]},
+    {"name": "I", "quantity": ["o", "?", "§"]},
+    {"name": "J", "quantity": []}
+  ],
+  "fullBottles": 0,
+  "nrErrors": 0
+}

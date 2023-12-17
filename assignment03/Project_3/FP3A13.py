@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  4 08:58:15 2023
 
 @author:
 GROUP FP13
@@ -9,9 +8,10 @@ Bernardo Costa - Nº 49212
 Mayla Dornas - Nº 62933
 
 """
-import json
-import random
 
+import random
+import json
+import os
 
 #######################################################
 ####################  FUNCTIONS  ######################
@@ -19,8 +19,8 @@ import random
 
 def showInstructionsOfGame():
     """
-       Shows the initial instructions of the game
-       """
+    Shows the initial instructions of the game
+    """
 
     print("=== Welcome to the Bottle Filling Game ===\n")
     print("Objective:")
@@ -28,8 +28,7 @@ def showInstructionsOfGame():
         "Your mission is to fill bottles with the same liquid symbol. You'll transfer liquid between bottles step by step, following some specific rules.\n")
     print("Rules:")
     print("1. The game will start with ten bottles partially filled with different symbols.")
-    print(
-        "2. You'll move the symbols from bottle to bottle but you can only add liquid to a bottle if its top symbol matches the liquid you're transferring.")
+    print("2. You'll move the symbols from bottle to bottle but you can only add liquid to a bottle if its top symbol matches the liquid you're transferring.")
     print("3. The goal is to have each bottle filled with a single symbol or empty by the end of the game.\n")
     print("How to Play:")
     print("1. You will be asked to choose your expertise level (from less expert (5) to max expert (1)).")
@@ -40,31 +39,6 @@ def showInstructionsOfGame():
     print("6. IMPORTANT: You can only make 3 mistakes during the game.\n")
 
     print("LET'S START!!! Enjoy the challenge!\n")
-
-
-def askForExpertise():
-    """
-    Asks the user what level of expertise he chooses, and returns the integer value (between MAX_EXPERT and LESS_EXPERT).
-    Returns
-    -------
-    expertiseLevel: integer
-        The user's chosen expertise level.
-    """
-
-    expertiseLevel = int(
-        input(
-            f"What is your expertise level? Choose between {MAX_EXPERT} to {LESS_EXPERT}, where {MAX_EXPERT} is the max expertise level. "
-        )
-    )
-
-    if MAX_EXPERT <= expertiseLevel <= LESS_EXPERT:
-        return expertiseLevel
-    else:
-        print("Choose a number between 1 to 5. ")
-        return askForExpertise()
-
-
-# *****************************************************
 
 
 def buildGameBottles(expertiseLevel):
@@ -84,7 +58,7 @@ def buildGameBottles(expertiseLevel):
     """
 
     array_of_bottles = [[] for _ in range(NR_BOTTLES)]
-    symbolsByExpertise = SYMBOLS[0: (5 + (5 - expertiseLevel))]
+    symbolsByExpertise = SYMBOLS[0 : (5 + (5 - expertiseLevel))]
     totalCapacity = NR_BOTTLES * CAPACITY - expertiseLevel * CAPACITY
 
     # Create a list with symbols repeated 8 times
@@ -163,9 +137,9 @@ def askForPlay():
         destinationBottle = str(input("Destination bottle? "))
 
         if (
-                sourceBottle in [bottle["name"] for bottle in bottles]
-                and destinationBottle in [bottle["name"] for bottle in bottles]
-                and sourceBottle != destinationBottle
+            sourceBottle in [bottle["name"] for bottle in bottles]
+            and destinationBottle in [bottle["name"] for bottle in bottles]
+            and sourceBottle != destinationBottle
         ):
             valid_entries = True
         else:
@@ -219,9 +193,9 @@ def moveIsPossible(source, destin, bottles):
     return False
 
 
-def doMove(source, destin, bottles):
+def doMove(source, destin, bottles, fileName):
     """
-    Performs the move if it's possible.
+    Performs the move if it's possible and saves the game information to a file.
 
     Parameters
     ----------
@@ -231,6 +205,8 @@ def doMove(source, destin, bottles):
         The name of the destination bottle.
     bottles : list
         A list of dictionaries representing each bottle in the game.
+    fileName : str
+        The name of the file to save the game information.
     """
 
     sourceQuantity = []
@@ -250,6 +226,9 @@ def doMove(source, destin, bottles):
             transfSourceQuantity.append(sourceQuantity.pop(-1))
 
     destinationQuantity.extend(transfSourceQuantity)
+
+    # Save the game information to a specified file
+    writeGameInfo(fileName, NR_BOTTLES - expertise, bottles, fullBottles, nrErrors)
 
 
 def full(bottle):
@@ -288,35 +267,103 @@ def allBottlesFull(fullBottles, expertise):
     return fullBottles == NR_BOTTLES - expertise
 
 
-def saveGame(expertise, bottles, fullBottles, nrErrors, fileName):
-    data = {
-        "expertise": expertise,
-        "bottles_info": bottles,
-        "bottlesToFill": NR_BOTTLES - fullBottles,
-        "nrErrors": nrErrors
-    }
+def newGameInfo(fileName):
+    """
+    Reads the contents of a file and returns necessary information for a new game.
 
-    with open(fileName, 'w') as json_file:
-        json.dump(data, json_file, indent=2)
+    Parameters
+    ----------
+    fileName : str
+        The name of the file to read.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the user's expertise level, number of bottles to fill, and a dictionary representing the bottles.
+    """
+    defaultFileName = "NewGame.json"
+
+    try:
+        with open(fileName, 'r') as file:
+            data = json.load(file)
+
+    except FileNotFoundError:
+        print(f"The file '{fileName}' was not found. Using default values from '{defaultFileName}'.")
+        fileName = defaultFileName
+        with open(fileName, 'r') as file:
+            data = json.load(file)
+
+    except (json.JSONDecodeError, KeyError) as e:
+        raise Exception(f"Invalid or missing data in the file for a new game: {e}")
+
+    # Generate expertise level if not provided in the file
+    expertiseLevel = data.get('expertiseLevel', random.randint(MAX_EXPERT, LESS_EXPERT))
+    nrBottlesToFill = NR_BOTTLES - expertiseLevel
+    bottlesInfo = buildGameBottles(expertiseLevel)
+
+    return expertiseLevel, nrBottlesToFill, bottlesInfo
 
 
 def oldGameInfo(fileName):
+    """
+    Reads the contents of a file and returns necessary information for an old game.
 
-    with open(fileName, 'r') as file:
-        data = json.load(file)
+    Parameters
+    ----------
+    fileName : str
+        The name of the file to read.
 
-    # Validate the structure of the loaded data
-    if not all(key in data for key in ['expertise', 'bottles_info', 'bottlesToFill', 'nrErrors']):
-        raise json.JSONDecodeError("Invalid data structure")
+    Returns
+    -------
+    tuple
+        A tuple containing user expertise level, number of bottles to fill, and a dictionary representing the bottles.
+    """
+    try:
+        with open(fileName, 'r') as file:
+            data = json.load(file)
 
-    expertise = data['expertise']
-    bottles = data['bottles_info']
-    fullBottles = NR_BOTTLES - data['bottlesToFill']
-    nrErrors = data['nrErrors']
+        # Extract information from the file
+        expertiseLevel = data['expertiseLevel']
+        nrBottlesToFill = NR_BOTTLES - expertiseLevel
+        bottlesInfo = data['bottlesInfo']
 
-    return expertise, bottles, fullBottles, nrErrors
+        return expertiseLevel, nrBottlesToFill, bottlesInfo
+
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        raise Exception("Invalid or missing data in the file for an old game.")
 
 
+def writeGameInfo(fName, nrBottlesToFill, bottlesInfo, fullBottles, nrErrors):
+    """
+    Writes game information to a file.
+
+    Parameters
+    ----------
+    fName : str
+        The name of the file to write.
+    nrBottlesToFill : int
+        The number of bottles to fill.
+    bottlesInfo : dict
+        A dictionary representing the bottles.
+    fullBottles : int
+        The number of full bottles.
+    nrErrors : int
+        The number of errors.
+
+    Raises
+    ------
+    Exception
+        If there is an issue writing to the file.
+    """
+    try:
+        data = {'expertiseLevel': MAX_EXPERT, 'nrBottlesToFill': nrBottlesToFill, 'bottlesInfo': bottlesInfo,
+                'fullBottles': fullBottles, 'nrErrors': nrErrors}
+
+        with open(fName, 'w') as file:
+            json.dump(data, file)
+
+    except Exception as e:
+        raise Exception(f"Error writing game information to the file: {e}")
 
 #######################################################
 ##################  MAIN PROGRAM ######################
@@ -328,26 +375,46 @@ NR_BOTTLES = 10
 LESS_EXPERT = 5
 MAX_EXPERT = 1
 showInstructionsOfGame()
-option = int(input("1 - New game \n2 - Continuation game ?\n"))
-if option == 1:
-    """ Create a new Game"""
-    fileName = input("Name of the file to save progress ") + ".json"
-    expertise = askForExpertise()
-    bottles = buildGameBottles(expertise)
-    nrErrors = 0
-    fullBottles = 0
-else:
-    """ Read all the information about an old game from a file"""
-    fileName = input("Name of the file containing the game information? ") + ".json"
-    expertise, bottles, fullBottles, nrErrors = oldGameInfo(fileName)
 
+while True:
+    option = int(input("1 - New game \n2 - Continuation game ?\n"))
+    fileName = input("Name of the file containing the game information? ")
+
+    if option == 1:
+        """ Read some of the information about a new game from a file, and
+            build the missing information accordingly"""
+        infoGame = newGameInfo(fileName)
+        expertise, nrBottlesToFill, bottles = infoGame
+        break  # Exit the loop if a valid option and file name are provided
+    elif option == 2:
+        """ Read all the information about an old game from a file"""
+        try:
+            infoGame = oldGameInfo(fileName)
+            expertise, nrBottlesToFill, bottles = infoGame
+            break  # Exit the loop if a valid file name is provided
+        except Exception as e:
+            print(f"Error: {e}")
+            print("Please choose again.")
+    else:
+        print("Invalid option. Please choose 1 for a new game or 2 to continue.")
+
+nrErrors = 0
+fullBottles = 0
 endGame = False
 showBottles(bottles, nrErrors)
+
+# Ask the user for the file name to save the game progress
+saveFileName = input("Enter the name of the file to save the game progress: ")
+
+# If the user didn't provide an extension, append ".json"
+if not saveFileName.endswith(".json"):
+    saveFileName += ".json"
+
 # Let's play the game
 while not endGame:
     source, destin = askForPlay()
     if moveIsPossible(source, destin, bottles):
-        doMove(source, destin, bottles)
+        doMove(source, destin, bottles, saveFileName)
         showBottles(bottles, nrErrors)
         for bottle in bottles:
             if destin == bottle["name"]:
@@ -355,13 +422,15 @@ while not endGame:
                     fullBottles += 1
                     keepGo = input("Bottle filled!!! Congrats!! Keep playing? (Y/N)")
                     if keepGo == "N":
-                        saveGame(expertise, bottles, fullBottles, nrErrors, fileName)
                         endGame = True
     else:
         print("Error!")
         nrErrors += 1
     if not endGame:
         endGame = allBottlesFull(fullBottles, expertise) or nrErrors == 3
+
+# After the game ends, save the final state to the specified file
+writeGameInfo(saveFileName, NR_BOTTLES - expertise, bottles)
 
 print("Full bottles =", fullBottles, "  Errors =", nrErrors)
 if nrErrors >= 3:
