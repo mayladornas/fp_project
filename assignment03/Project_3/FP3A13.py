@@ -325,9 +325,11 @@ def oldGameInfo(fileName):
         # Extract information from the file
         expertiseLevel = data['expertiseLevel']
         nrBottlesToFill = NR_BOTTLES - expertiseLevel
+        fullBottles = data['fullBottles']
         bottlesInfo = data['bottlesInfo']
+        nrErrors = data['nrErrors']
 
-        return expertiseLevel, nrBottlesToFill, bottlesInfo
+        return expertiseLevel, nrBottlesToFill, bottlesInfo, nrErrors, fullBottles
 
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         raise Exception("Invalid or missing data in the file for an old game.")
@@ -378,19 +380,28 @@ showInstructionsOfGame()
 
 while True:
     option = int(input("1 - New game \n2 - Continuation game ?\n"))
-    fileName = input("Name of the file containing the game information? ")
 
     if option == 1:
         """ Read some of the information about a new game from a file, and
             build the missing information accordingly"""
-        infoGame = newGameInfo(fileName)
+        # Ask the user for the file name to save the game progress
+        saveFileName = input("Enter the name of the file to save the game progress: ")
+        if not saveFileName.endswith(".json"):
+            saveFileName += ".json"
+        infoGame = newGameInfo(saveFileName)
         expertise, nrBottlesToFill, bottles = infoGame
+        nrErrors = 0
+        fullBottles = 0
         break  # Exit the loop if a valid option and file name are provided
     elif option == 2:
         """ Read all the information about an old game from a file"""
         try:
-            infoGame = oldGameInfo(fileName)
-            expertise, nrBottlesToFill, bottles = infoGame
+            saveFileName = input("Name of the file containing the game information? ")
+            # If the user didn't provide an extension, append ".json"
+            if not saveFileName.endswith(".json"):
+                saveFileName += ".json"
+            infoGame = oldGameInfo(saveFileName)
+            expertise, nrBottlesToFill, bottles, nrErrors, fullBottles = infoGame
             break  # Exit the loop if a valid file name is provided
         except Exception as e:
             print(f"Error: {e}")
@@ -398,17 +409,8 @@ while True:
     else:
         print("Invalid option. Please choose 1 for a new game or 2 to continue.")
 
-nrErrors = 0
-fullBottles = 0
 endGame = False
 showBottles(bottles, nrErrors)
-
-# Ask the user for the file name to save the game progress
-saveFileName = input("Enter the name of the file to save the game progress: ")
-
-# If the user didn't provide an extension, append ".json"
-if not saveFileName.endswith(".json"):
-    saveFileName += ".json"
 
 # Let's play the game
 while not endGame:
